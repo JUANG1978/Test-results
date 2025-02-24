@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳轉效果 Prototype</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f8f9fa; }
+        button { padding: 10px 20px; margin: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        .selected { background: #007bff; color: white; }
+        .card { width: 300px; padding: 20px; margin: 20px auto; border: 1px solid #ccc; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; background: white; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); }
+        .card:hover { background: #e9ecef; }
+        .hidden { display: none; }
+        .fade { animation: fadeIn 0.4s ease-in-out; }
+        .slide { animation: slideIn 0.4s ease-in-out; }
+        .scale { animation: scaleIn 0.4s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h2>選擇跳轉動畫</h2>
+    <button id="fadeBtn" onclick="setTransition('fade', this)">淡入淡出</button>
+    <button id="slideBtn" onclick="setTransition('slide', this)">向右推進</button>
+    <button id="scaleBtn" onclick="setTransition('scale', this)">縮放</button>
+    
+    <div id="mainPage">
+        <div class="card" onclick="goToPage()">綜合健康指數</div>
+        <div class="card" onclick="goToPage()">消化影響分析</div>
+    </div>
+    
+    <div id="newPage" class="hidden">
+        <h3>新頁面</h3>
+        <p>這是跳轉後的內容</p>
+        <button onclick="goBack()">返回</button>
+    </div>
+    
+    <script>
+        let transitionEffect = 'fade';
+        
+        function setTransition(type, element) {
+            transitionEffect = type;
+            document.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+        
+        function goToPage() {
+            document.getElementById('mainPage').classList.add('hidden');
+            let newPage = document.getElementById('newPage');
+            newPage.classList.remove('hidden');
+            newPage.classList.add(transitionEffect);
+        }
+        
+        function goBack() {
+            document.getElementById('newPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.remove('hidden');
+        }
+        
+        // 滑動手勢支持
+        let startX;
+        document.addEventListener("touchstart", function(e) {
+            startX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener("touchend", function(e) {
+            let endX = e.changedTouches[0].clientX;
+            if (startX - endX > 50) { goToPage(); }  // 右滑跳轉
+            if (endX - startX > 50) { goBack(); }    // 左滑返回
+        });
+    </script>
+</body>
+</html>
